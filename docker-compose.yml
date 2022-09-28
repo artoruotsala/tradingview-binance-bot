@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: tradingview-binance-db
+    restart: always
+  ts-node-docker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    environment:
+      MYSQL_DATABASE: tradingview-binance-db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+      MYSQL_HOST: db
+    volumes:
+      - ./src:/home/node/app/src
+      - ./nodemon.json:/home/node/app/nodemon.json
+    container_name: ts-node-docker
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    command: npm run dev
