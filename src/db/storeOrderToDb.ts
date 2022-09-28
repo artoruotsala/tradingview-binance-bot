@@ -11,7 +11,7 @@ export type SQLResponse = {
   highest: string
 }
 
-export const writeToDb = async (tradingPair: string, qty: string) => {
+export const storeOrderToDb = async (tradingPair: string, qty: string) => {
   try {
     const avgPrice = await exchange.getAvgPrice({ symbol: tradingPair })
     const buyPrice = avgPrice.price
