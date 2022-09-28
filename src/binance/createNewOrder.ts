@@ -47,7 +47,7 @@ export const createNewOrder = async (
       quantity: quantity,
     })) as OrderResponseFull
     console.log('ℹ️  Response from Binance: ', orderStatus)
-    return sendOrderResponse(orderStatus)
+    return sendOrderResponse(orderStatus, orderType)
   } catch (error) {
     console.log(`❗ Couldn't place ${orderType} order.`, error)
     return failedOrder

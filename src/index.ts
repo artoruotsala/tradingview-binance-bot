@@ -8,7 +8,7 @@ import { initExchangeData } from './binance/binance'
 
 const PORT = process.env.PORT || 3000
 
-const connection = mysql.createConnection({
+export const connection = mysql.createConnection({
   host: 'db',
   user: 'root',
   password: 'password',
