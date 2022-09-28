@@ -7,7 +7,7 @@ export const createNewOrder = async (
   tradingPair: string,
   coinOne: string,
   coinTwo: string,
-  orderType: OrderSide
+  orderType: string
 ) => {
   let orderStatus: OrderResponseFull
   let quantity = 0
@@ -42,7 +42,7 @@ export const createNewOrder = async (
 
     orderStatus = (await exchange.submitNewOrder({
       symbol: tradingPair,
-      side: orderType,
+      side: orderType.toUpperCase() as OrderSide,
       type: 'MARKET',
       quantity: quantity,
     })) as OrderResponseFull
@@ -52,6 +52,4 @@ export const createNewOrder = async (
     console.log(`❗ Couldn't place ${orderType} order.`, error)
     return failedOrder
   }
-
-  return failedOrder
 }

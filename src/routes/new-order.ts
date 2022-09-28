@@ -1,17 +1,18 @@
 import { Router } from 'express'
 import { createNewOrder } from '../binance/createNewOrder'
 
-const router = Router()
+export const newOrderRoute = Router()
 
-router.get('/', async (req, res) => {
-  res.status(200).send({ message: 'Hello World!' })
-})
-
-router.post('/new-order', async (req, res) => {
+newOrderRoute.post('/new-order', async (req, res) => {
   const { tradingPair, coinOne, coinTwo, orderType, password } = req.body
 
   if (!tradingPair || !coinOne || !coinTwo || !orderType || !password) {
     res.status(400).send('Missing required parameters')
+    return
+  }
+
+  if (password !== process.env.PASSWORD) {
+    res.status(401).send('Unauthorized')
     return
   }
 
@@ -22,7 +23,5 @@ router.post('/new-order', async (req, res) => {
 
   const status = await createNewOrder(tradingPair, coinOne, coinTwo, orderType)
 
-  res.status(status.code).json(status?.status)
+  res.status(status.code).json(status.status)
 })
-
-export default router
