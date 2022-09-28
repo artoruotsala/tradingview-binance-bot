@@ -1,4 +1,5 @@
 import { OrderResponseFull, OrderType } from 'binance'
+import { deleteFromDb } from '../db/deleteFromDb'
 import { writeToDb } from '../db/writeToDb'
 
 export const sendOrderResponse = (
@@ -12,6 +13,7 @@ export const sendOrderResponse = (
   ) {
     if (orderType.toUpperCase() === 'BUY')
       writeToDb(orderStatus.symbol, orderStatus.executedQty as string)
+    else deleteFromDb(orderStatus.symbol)
 
     return { status: 'Order Placed', code: 200 }
   }

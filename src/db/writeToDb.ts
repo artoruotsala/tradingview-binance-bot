@@ -1,7 +1,7 @@
 import { connection } from '../index'
 import { exchange } from '..'
 
-type SQLResponse = {
+export type SQLResponse = {
   ticker: string
   quantity: string
   buyPrice: string
