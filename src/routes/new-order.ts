@@ -2,8 +2,8 @@ import { Router } from 'express'
 
 const router = Router()
 
-router.get('/', (req, res) => {
-  res.send('Hello World!')
+router.get('/', async (req, res) => {
+  res.status(200).send({ message: 'Hello World!' })
 })
 
 router.post('/new-order', async (req, res) => {

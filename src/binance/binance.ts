@@ -1,4 +1,3 @@
-import Binance from 'binance-api-node'
 import { MainClient } from 'binance'
 
 type Filters = {
@@ -32,21 +31,10 @@ export const global: Globals = {
   minimums: {},
 }
 
-export const client = Binance({
-  apiKey: process.env.API_KEY!,
-  apiSecret: process.env.API_SECRET!,
-})
-
-export const exchange = new MainClient({
-  api_key: process.env.API_KEY!, // Get this from your account on binance.com
-  api_secret: process.env.API_SECRET!, // Same for this
-})
-
-export const initExchangeData = () => {
+export const initExchangeData = (exchange: MainClient) => {
   exchange
     .getExchangeInfo()
     .then((result) => {
-      // console.log('getExchangeInfo inverse result: ', result)
       let minimums: { [key: string]: Filters } = {}
       for (let obj of result.symbols) {
         let filters: Filters = { status: obj.status }
