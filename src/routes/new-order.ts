@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { createNewOrder } from '../binance/createNewOrder'
 
 const router = Router()
 
@@ -19,9 +20,9 @@ router.post('/new-order', async (req, res) => {
 
   console.log(`🤖 An order to ${orderType} ${coinOne} was sent to Binance Bot.`)
 
-  // const status = await placeOrder(tradingPair, coinOne, coinTwo, orderType);
+  const status = await createNewOrder(tradingPair, coinOne, coinTwo, orderType)
 
-  res.status(200).json(status)
+  res.status(status.code).json(status?.status)
 })
 
 export default router
