@@ -9,6 +9,8 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: tradingview-binance-db
     restart: always
+    healthcheck:
+      test: 'exit 0'
   ts-node-docker:
     build:
       context: .
@@ -28,5 +30,7 @@ services:
     ports:
       - '3000:3000'
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: on-failure
     command: npm run dev
