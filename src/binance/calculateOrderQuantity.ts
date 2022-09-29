@@ -17,19 +17,14 @@ export const calculateOrderQuantity = async (
   let quantity = 0
 
   try {
-    // Get average price of trading pair (5 min average)
-
     const avgPrice = (await exchange.getAvgPrice({
       symbol: tradingPair,
     })) as AvgPriceResult
-
     const price = parseFloat(avgPrice.price)
 
-    // Get user wallet
     const userWallet = await exchange.getAccountInformation()
     let coinTwoBalance = undefined
 
-    // Find the free balance of coinTwo
     if (userWallet.balances !== undefined && userWallet.balances.length > 0) {
       userWallet.balances.forEach((token) => {
         if (token.asset === coinTwo) {
@@ -38,20 +33,16 @@ export const calculateOrderQuantity = async (
       })
     }
 
-    // Calculate Quantity - Quantity = coinTwo balance / tradingPair average price;
     if (coinTwoBalance !== undefined && price !== undefined) {
       quantity = tradeSizeInMainCoin / price
     }
 
-    // Set minimum order amount with minQty
     if (quantity < minQty) quantity = minQty
 
-    // Set minimum order value with minNotional
     if (price * quantity < minNotional) {
       quantity = minNotional / price
     }
 
-    // Round to stepSize
     const roundStep = (qt: number, stepSize: string) => {
       const precision =
         stepSize.toString().split('.')[1]?.split('1')[0]?.length + 1 || 0

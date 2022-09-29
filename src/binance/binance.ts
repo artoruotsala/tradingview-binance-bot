@@ -59,6 +59,6 @@ export const initExchangeData = (exchange: MainClient) => {
       global.minimums = minimums
     })
     .catch((err) => {
-      console.error('getExchangeInfo inverse error: ', err)
+      console.error('getExchangeInfo init error: ', err)
     })
 }

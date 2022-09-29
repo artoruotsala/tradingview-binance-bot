@@ -16,9 +16,6 @@ newOrderRoute.post('/new-order', async (req, res) => {
     return
   }
 
-  // Send order recieved text
-  // sendText(`🤖 An order to ${orderType} ${coinOne} was sent to Binance Bot.`);
-
   console.log(`🤖 An order to ${orderType} ${coinOne} was sent to Binance Bot.`)
 
   const status = await createNewOrder(tradingPair, coinOne, coinTwo, orderType)
