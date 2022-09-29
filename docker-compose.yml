@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: db.Dockerfile
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
       MYSQL_DATABASE: tradingview-binance-db
     volumes:
       - ./mysql:/var/lib/mysql
@@ -25,7 +25,7 @@ services:
     environment:
       MYSQL_DATABASE: tradingview-binance-db
       MYSQL_USER: root
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
       MYSQL_HOST: db
     volumes:
       - ./src:/home/node/app/src

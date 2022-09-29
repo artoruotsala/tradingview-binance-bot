@@ -11,7 +11,7 @@ newOrderRoute.post('/new-order', async (req, res) => {
     return
   }
 
-  if (password !== process.env.PASSWORD) {
+  if (password !== process.env.TRADINGVIEW_PASSWORD!) {
     res.status(401).send('Unauthorized')
     return
   }
