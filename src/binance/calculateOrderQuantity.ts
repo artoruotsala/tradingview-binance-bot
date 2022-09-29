@@ -11,6 +11,7 @@ export const calculateOrderQuantity = async (
   )
   const minQty = parseInt(global.minimums[tradingPair]?.minQty || '0')
   const tradeSizeInMainCoin = parseFloat(process.env.TRADE_SIZE_MAINCOIN!)
+  // const tradeSizeInMainCoin = 500
   const stepSize = global.minimums[tradingPair]?.stepSize
 
   let quantity = 0

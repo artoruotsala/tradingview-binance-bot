@@ -16,8 +16,9 @@ export const connection = mysql.createConnection({
 })
 
 export const exchange = new MainClient({
-  api_key: process.env.API_KEY!, // Get this from your account on binance.com
-  api_secret: process.env.API_SECRET!, // Same for this
+  api_key: process.env.API_KEY!,
+  api_secret: process.env.API_SECRET!,
+  beautifyResponses: true,
 })
 
 const app = express()
