@@ -1,6 +1,10 @@
 ## Tradingview Binance Bot v.1.0
 
+# Getting started
+
 # Set envs
+
+Copy .env.example to .env
 
 ```
 API_KEY=
