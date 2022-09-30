@@ -14,7 +14,25 @@ interface RequestBody {
 let tickerArrayBuy: string[] = []
 let tickerArraySell: string[] = []
 
+export class BotStatus {
+  public static isRunning = true
+
+  public static get() {
+    return BotStatus.isRunning
+  }
+
+  public static set(status: boolean) {
+    BotStatus.isRunning = status
+  }
+}
+
 newOrderRoute.post('/new-order', async (req, res) => {
+  if (!BotStatus.get()) {
+    return res.status(400).json({
+      message: 'Bot is not taking new orders',
+    })
+  }
+
   const { tradingPair, coinOne, coinTwo, orderType, password } =
     req.body as RequestBody
 

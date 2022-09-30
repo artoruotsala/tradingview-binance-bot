@@ -2,6 +2,17 @@ import { AvgPriceResult } from 'binance-api-node'
 import { global } from './binance'
 import { exchange } from '../index'
 
+export class TradeSize {
+  private static TRADE_SIZE = parseFloat(process.env.TRADE_SIZE_MAINCOIN!) || 0
+  public static get() {
+    return TradeSize.TRADE_SIZE
+  }
+
+  public static set(size: number) {
+    TradeSize.TRADE_SIZE = size
+  }
+}
+
 export const calculateOrderQuantity = async (
   tradingPair: string,
   coinTwo: string
@@ -10,8 +21,8 @@ export const calculateOrderQuantity = async (
     global.minimums[tradingPair]?.minNotional || '0'
   )
   const minQty = parseInt(global.minimums[tradingPair]?.minQty || '0')
-  const tradeSizeInMainCoin = parseFloat(process.env.TRADE_SIZE_MAINCOIN!)
-  // const tradeSizeInMainCoin = 500
+  // const tradeSizeInMainCoin = parseFloat(process.env.TRADE_SIZE_MAINCOIN!)
+  const tradeSizeInMainCoin = TradeSize.get()
   const stepSize = global.minimums[tradingPair]?.stepSize
 
   let quantity = 0
