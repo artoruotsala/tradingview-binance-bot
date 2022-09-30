@@ -15,8 +15,8 @@ chmod +x /usr/local/bin/docker-compose
 # if you change this, change the systemd service file to match
 # WorkingDirectory=[whatever you have below]
 mkdir /srv/docker
-chmod 777 /srv/docker
-git clone https://github.com/artoruotsala/tradingview-binance-bot.git /srv/docker/
+git clone https://github.com/artoruotsala/tradingview-binance-bot.git /srv/docker
+mv /srv/.env /srv/docker/.env
 
 # copy in systemd unit file and register it so our compose file runs 
 # on system restart
@@ -24,4 +24,5 @@ curl -o /etc/systemd/system/docker-compose-app.service https://raw.githubusercon
 systemctl enable docker-compose-app
 
 # start up the application via docker-compose
-docker-compose -f /srv/docker/docker-compose.prod.yml up --build -d
+cd /srv/docker
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d

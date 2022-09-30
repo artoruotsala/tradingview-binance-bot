@@ -17,8 +17,8 @@ export const pool = mariadb.createPool({
 })
 
 export const exchange = new MainClient({
-  api_key: process.env.API_KEY!,
-  api_secret: process.env.API_SECRET!,
+  api_key: process.env.BINANCE_API_KEY!,
+  api_secret: process.env.BINANCE_API_SECRET!,
   beautifyResponses: true,
 })
 

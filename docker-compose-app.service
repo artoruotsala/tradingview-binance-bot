@@ -9,9 +9,9 @@ After=docker.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-# match the below to wherever you copied your docker-compose.yml
 WorkingDirectory=/srv/docker
-ExecStart=/usr/local/bin/docker-compose -f docker-compose.prod.yml up --build -d
+ExecStart=/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --force-recreate --build -d
+ExecStartPost=/docker image prune -f
 ExecStop=/usr/local/bin/docker-compose down
 TimeoutStartSec=0
 
