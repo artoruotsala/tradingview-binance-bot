@@ -27,7 +27,7 @@ export const createNewOrder = async (
     }
     // SELL ORDER
     // at this point, sell all
-    else {
+    else if (orderType.toUpperCase() === 'SELL') {
       const userWallet = await exchange.getAccountInformation()
       const userWalletData = userWallet.balances
       const userWalletDataFiltered = userWalletData.filter(
@@ -35,7 +35,7 @@ export const createNewOrder = async (
       )
       quantity = parseFloat(userWalletDataFiltered[0].free as string)
       if (!quantity) {
-        console.log("quantity couldn't be calculated")
+        console.log('no quantity')
         return failedOrder
       }
     }
