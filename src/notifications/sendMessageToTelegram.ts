@@ -9,6 +9,6 @@ const bot = new TelegramBot(
 export async function sendMessageToTelegram(orderStatus: OrderResponseFull) {
   const buySell = orderStatus.side === 'BUY' ? '🟢' : '🔴'
   await bot.sendMessage(
-    `Order Placed: ${buySell} ${orderStatus.symbol} ${orderStatus.executedQty} at ${orderStatus.price}`
+    `Order Placed: ${buySell} ${orderStatus.symbol} ${orderStatus.executedQty} at ${orderStatus.fills[0].price}`
   )
 }

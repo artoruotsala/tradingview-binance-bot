@@ -14,7 +14,7 @@ export const sendOrderResponse = (
       resetTickerAndStoreToDb(
         orderStatus.symbol,
         orderStatus.executedQty as string,
-        orderStatus.price as string
+        orderStatus.fills[0].price as string
       )
 
     sendMessageToTelegram(orderStatus)
