@@ -50,7 +50,7 @@ MYSQL_ROOT_PASSWORD=
 - echo script adds .env file for docker on Lightsail init
 
 1. Launch AWS Lightsail Instance (OS Only)
-2. Choose Ubuntu 20
+2. Choose Ubuntu 18
 3. Add the starting script with your envs
 4. Launch!
 
@@ -59,7 +59,7 @@ Starting script:
 ```
 mkdir /srv
 
-echo $'BINANCE_API_KEY=
+echo 'BINANCE_API_KEY=
 BINANCE_API_SECRET=
 TELEGRAM_TOKEN_LIVE=
 TELEGRAM_CHAT_ID_LIVE=
