@@ -17,36 +17,36 @@ export const storeOrderToDb = async (tradingPair: string, qty: string) => {
     const buyPrice = avgPrice.price
     const timestamp = Date.now().valueOf() / 1000 / 60
 
-    const readTickers = async () => {
-      return new Promise((resolve, reject) => {
-        connection.execute(
-          'SELECT * FROM `tickers` WHERE `ticker` = ?',
-          [tradingPair],
-          async function (err, results, fields) {
-            resolve(results)
-          }
-        )
-      })
-    }
+    // const readTickers = async () => {
+    //   return new Promise((resolve, reject) => {
+    //     connection.execute(
+    //       'SELECT * FROM `tickers` WHERE `ticker` = ?',
+    //       [tradingPair],
+    //       async function (err, results, fields) {
+    //         resolve(results)
+    //       }
+    //     )
+    //   })
+    // }
 
-    const sqlResponse = (await readTickers()) as SQLResponse[]
+    // const sqlResponse = (await readTickers()) as SQLResponse[]
 
     let pyramids = 0
     let newQuantity = qty
     let highest = buyPrice
     let sellPrice = '0'
 
-    if (sqlResponse.length !== 0) {
-      highest =
-        parseFloat(sqlResponse[0].highest) > parseFloat(buyPrice as string)
-          ? sqlResponse[0].highest
-          : buyPrice
-      sellPrice = sqlResponse[0].sellPrice
-      pyramids = sqlResponse[0].pyramids
+    // if (sqlResponse.length !== 0) {
+    //   highest =
+    //     parseFloat(sqlResponse[0].highest) > parseFloat(buyPrice as string)
+    //       ? sqlResponse[0].highest
+    //       : buyPrice
+    //   sellPrice = sqlResponse[0].sellPrice
+    //   pyramids = sqlResponse[0].pyramids
 
-      const quantity = parseFloat(sqlResponse[0].quantity)
-      newQuantity = (quantity + parseFloat(qty)).toString()
-    }
+    //   const quantity = parseFloat(sqlResponse[0].quantity)
+    //   newQuantity = (quantity + parseFloat(qty)).toString()
+    // }
 
     pyramids++
 

@@ -1,8 +1,8 @@
-## Tradingview Binance Bot v.1.0
+# Tradingview Binance Bot v.1.0
 
-# Getting started
+## Getting started
 
-# Set envs
+## Set envs
 
 Copy .env.example to .env
 
@@ -28,4 +28,16 @@ Send a POST request to localhost:3000/new-order with the following data object:
 	"orderType" : "SELL",
 	"password" : set password to envs
 }
+```
+
+## Sail to AWS Lightsail
+
+Thanks to Mike Coleman -> mikegcoleman/todo
+
+```
+curl -o lightsail-compose.sh https://raw.githubusercontent.com/artoruotsala/tradingview-binance-bot/master/lightsail-compose.sh
+
+chmod +x ./lightsail-compose.sh
+
+./lightsail-compose.sh
 ```

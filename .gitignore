@@ -5,3 +5,4 @@ mysql
 build
 
 .env
+lightsail-script-with-envs.txt

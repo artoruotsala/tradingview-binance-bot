@@ -1,5 +1,6 @@
 import express from 'express'
-import mysql from 'mysql2'
+// import mysql from 'mysql2'
+import mariadb from 'mariadb'
 import dotenv from 'dotenv'
 dotenv.config()
 import { newOrderRoute, rootRoute } from './routes'
@@ -8,10 +9,10 @@ import { initExchangeData } from './binance/binance'
 
 const PORT = process.env.PORT || 3000
 
-export const connection = mysql.createConnection({
-  host: 'db',
+export const connection = mariadb.createPool({
+  host: 'mariadb',
   user: 'root',
-  password: 'password',
+  password: process.env.MYSQL_ROOT_PASSWORD!,
   database: 'tradingview-binance-db',
 })
 
@@ -28,6 +29,5 @@ app.use(newOrderRoute, rootRoute)
 
 app.listen(3000, () => {
   initExchangeData(exchange)
-  connection.connect()
   console.log(`Server running on port ${PORT}`)
 })

@@ -1,42 +1,37 @@
 version: '3.7'
 
 services:
-  db:
-    build:
-      context: .
-      dockerfile: db.Dockerfile
+  mariadb:
+    image: mariadb:10.9.3
     environment:
       MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
       MYSQL_DATABASE: tradingview-binance-db
     volumes:
-      - ./mysql:/var/lib/mysql
+      - maria-data:/data/db
     expose:
       - '3306'
     ports:
       - '3306:3306'
     restart: always
-    healthcheck:
-      test: 'exit 0'
   ts-node-docker:
     build:
       context: .
       dockerfile: Dockerfile
       target: base
     environment:
-      MYSQL_DATABASE: tradingview-binance-db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
-      MYSQL_HOST: db
+      DB_NAME: tradingview-binance-db
+      DB_USER: root
+      DB_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      DB_HOST: mariadb
     volumes:
       - ./src:/home/node/app/src
       - ./nodemon.json:/home/node/app/nodemon.json
-    container_name: ts-node-docker
     expose:
       - '3000'
     ports:
       - '3000:3000'
-    depends_on:
-      db:
-        condition: service_healthy
     restart: on-failure
     command: npm run dev
+volumes:
+  maria-data:
+    driver: local
