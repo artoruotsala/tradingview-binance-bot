@@ -9,7 +9,7 @@ import { initExchangeData } from './binance/binance'
 
 const PORT = process.env.PORT || 3000
 
-export const connection = mariadb.createPool({
+export const pool = mariadb.createPool({
   host: 'mariadb',
   user: 'root',
   password: process.env.MYSQL_ROOT_PASSWORD!,

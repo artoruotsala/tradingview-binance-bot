@@ -8,6 +8,7 @@ services:
       MYSQL_DATABASE: tradingview-binance-db
     volumes:
       - maria-data:/data/db
+      - ./db_init:/docker-entrypoint-initdb.d
     expose:
       - '3306'
     ports:
