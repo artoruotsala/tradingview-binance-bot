@@ -47,7 +47,7 @@ export const calculateOrderQuantity = async (
 
     if (coinTwoBalance !== undefined && price !== undefined) {
       if (expStrategy) {
-        quantity = parseFloat(coinTwoBalance) / price
+        quantity = (parseFloat(coinTwoBalance) * 0.99) / price
       } else {
         quantity = tradeSizeInMainCoin / price
       }
