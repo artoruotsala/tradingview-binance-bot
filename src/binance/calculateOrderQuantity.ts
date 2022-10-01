@@ -15,7 +15,8 @@ export class TradeSize {
 
 export const calculateOrderQuantity = async (
   tradingPair: string,
-  coinTwo: string
+  coinTwo: string,
+  expStrategy: boolean
 ) => {
   const minNotional = parseFloat(
     global.minimums[tradingPair]?.minNotional || '0'
@@ -45,7 +46,11 @@ export const calculateOrderQuantity = async (
     }
 
     if (coinTwoBalance !== undefined && price !== undefined) {
-      quantity = tradeSizeInMainCoin / price
+      if (expStrategy) {
+        quantity = parseFloat(coinTwoBalance) / price
+      } else {
+        quantity = tradeSizeInMainCoin / price
+      }
     }
 
     if (quantity < minQty) quantity = minQty

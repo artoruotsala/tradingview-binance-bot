@@ -27,6 +27,8 @@ export const resetTickerAndStoreToDb = async (
     )
 
     connection.release()
+
+    console.log('Reset ticker and stored to db')
   } catch (error) {
     console.log(error)
   }

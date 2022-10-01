@@ -49,7 +49,7 @@ MYSQL_ROOT_PASSWORD=
 - Edited by Arto Ruotsala
 - echo script adds .env file for docker on Lightsail init
 
-1. Launch AWS Lightsail Instance (OS Only)
+1. Launch AWS Lightsail Instance (OS Only, with at least 1GB of memory)
 2. Choose Ubuntu 18
 3. Add the starting script with your envs
 4. Launch!

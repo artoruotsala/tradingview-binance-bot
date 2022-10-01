@@ -18,7 +18,7 @@ export const createNewOrder = async (
     // BUY ORDER
 
     if (orderType.toUpperCase() === 'BUY') {
-      quantity = await calculateOrderQuantity(tradingPair, coinTwo)
+      quantity = await calculateOrderQuantity(tradingPair, coinTwo, true)
       console.log('calculating amount')
       if (!quantity) {
         console.log("quantity couldn't be calculated")
