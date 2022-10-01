@@ -1,9 +1,6 @@
 version: '3.7'
 
 services:
-  mariadb:
-    volumes:
-      - maria-data:/data/db
   ts-node-docker:
     build:
       target: production

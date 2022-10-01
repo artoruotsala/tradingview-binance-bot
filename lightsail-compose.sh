@@ -25,4 +25,4 @@ systemctl enable docker-compose-app
 
 # start up the application via docker-compose
 cd /srv/docker
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+docker-compose -f docker-compose.yml -f docker-compose.prod.init.yml up --build -d

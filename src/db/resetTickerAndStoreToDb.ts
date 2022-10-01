@@ -13,7 +13,7 @@ export const resetTickerAndStoreToDb = async (
       [tradingPair]
     )) as SQLResponse[]
 
-    const buyPrice = sqlResponse[0].buyPrice || '0'
+    const buyPrice = sqlResponse[0]?.buyPrice || '0'
     const timestamp = Date.now().valueOf() / 1000 / 60
 
     await connection.execute(
