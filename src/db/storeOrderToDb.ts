@@ -42,7 +42,7 @@ export const storeOrderToDb = async (tradingPair: string, qty: string) => {
 
     pyramids++
 
-    connection.execute(
+    await connection.execute(
       'REPLACE INTO tickers (ticker, quantity, buyPrice, sellPrice, pyramids, timestamp, highest) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [
         tradingPair,
@@ -54,6 +54,8 @@ export const storeOrderToDb = async (tradingPair: string, qty: string) => {
         highest,
       ]
     )
+
+    connection.release()
 
     console.log('Tickery data written')
   } catch (err) {
