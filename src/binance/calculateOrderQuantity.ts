@@ -1,6 +1,6 @@
 import { AvgPriceResult } from 'binance-api-node'
-import { global } from './binance'
-import { exchange } from '../index'
+import { TICKERS } from './binance'
+import { binanceClient } from '..'
 import { getTrades } from '../db/getTrades'
 
 export class TradeSize {
@@ -50,42 +50,35 @@ export const calculateOrderQuantity = async (
   coinTwo: string,
   expStrategy: boolean
 ) => {
-  const minNotional = parseFloat(
-    global.minimums[tradingPair]?.minNotional || '0'
-  )
-  const minQty = parseInt(global.minimums[tradingPair]?.minQty || '0')
+  const minNotional = TICKERS[tradingPair]?.minNotional
+  const minQty = TICKERS[tradingPair]?.minQty
   // const tradeSizeInMainCoin = parseFloat(process.env.TRADE_SIZE_MAINCOIN!)
   const tradeSizeInMainCoin = TradeSize.get()
-  const stepSize = global.minimums[tradingPair]?.stepSize
+
+  const precision = TICKERS[tradingPair]?.precision
 
   let quantity = 0
 
   try {
-    const avgPrice = (await exchange.getAvgPrice({
-      symbol: tradingPair,
-    })) as AvgPriceResult
-    const price = parseFloat(avgPrice.price)
+    const ticker = await binanceClient.fetchTicker(tradingPair)
+    const price = ticker.average
 
-    const userWallet = await exchange.getAccountInformation()
-    let coinTwoBalance = undefined
-
-    if (userWallet.balances !== undefined && userWallet.balances.length > 0) {
-      userWallet.balances.forEach((token) => {
-        if (token.asset === coinTwo) {
-          coinTwoBalance = token.free
-        }
-      })
+    if (!price) {
+      throw new Error('No price found')
     }
 
-    if (coinTwoBalance !== undefined && price !== undefined) {
-      if (expStrategy) {
-        const orderPerc = await getOrderPerc()
-        quantity = (parseFloat(coinTwoBalance) * orderPerc * 0.99) / price
-      } else {
-        quantity = (tradeSizeInMainCoin * 0.99) / price
-      }
+    const userWallet = await binanceClient.fetchBalance()
+    const coinTwoBalance = userWallet[coinTwo].free
+
+    if (!coinTwoBalance) {
+      throw new Error('No balance available for trading')
+    }
+
+    if (expStrategy) {
+      const orderPerc = await getOrderPerc()
+      quantity = (coinTwoBalance * orderPerc * 0.99) / price
     } else {
-      throw new Error('Could not get balance or price')
+      quantity = (tradeSizeInMainCoin * 0.99) / price
     }
 
     if (quantity < minQty) quantity = minQty
@@ -94,15 +87,15 @@ export const calculateOrderQuantity = async (
       quantity = minNotional / price
     }
 
-    const roundStep = (qt: number, stepSize: string) => {
-      const precision =
-        stepSize.toString().split('.')[1]?.split('1')[0]?.length + 1 || 0
-      return ((qt / parseFloat(stepSize)) * parseFloat(stepSize)).toFixed(
-        precision
-      )
+    const roundStep = (qty: string, precision: number): number => {
+      // Integers do not require rounding
+      if (Number.isInteger(qty)) return parseFloat(qty)
+      const qtyString = parseFloat(qty).toFixed(16)
+      const decimalIndex = qtyString.indexOf('.')
+      return parseFloat(qtyString.slice(0, decimalIndex + precision + 1))
     }
 
-    quantity = parseFloat(roundStep(quantity, stepSize || '0'))
+    quantity = roundStep(quantity.toString(), precision)
     return quantity
   } catch (error) {
     console.log("❗ Couldn't calculate buy quantity. ", error)

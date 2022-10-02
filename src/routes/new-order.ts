@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { createNewOrder } from '../binance/createNewOrder'
+// import { createNewOrder } from '../binance/createNewOrder'
 
 export const newOrderRoute = Router()
 
@@ -75,8 +75,8 @@ newOrderRoute.post('/new-order', async (req, res) => {
 
   console.log(`🤖 An order to ${orderType} ${coinOne} was sent to Binance Bot.`)
 
-  const status = await createNewOrder(tradingPair, coinOne, coinTwo, orderType)
+  // const status = await createNewOrder(tradingPair, coinOne, coinTwo, orderType)
 
-  res.status(status.code).json(status.status)
-  // res.send(200)
+  // res.status(status.code).json(status.status)
+  res.send(200)
 })
