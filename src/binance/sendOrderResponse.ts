@@ -1,4 +1,4 @@
-import { OrderResponseFull, OrderType } from 'binance'
+import { OrderResponseFull } from 'binance'
 import { resetTickerAndStoreToDb } from '../db/resetTickerAndStoreToDb'
 import { storeOrderToDb } from '../db/storeOrderToDb'
 import { sendMessageToTelegram } from '../notifications/sendMessageToTelegram'
