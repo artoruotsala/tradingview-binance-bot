@@ -7,6 +7,7 @@ import { MainClient } from 'binance'
 import { initExchangeData } from './binance/binance'
 import TelegramBot from 'node-telegram-bot-api'
 import { calculateOrderQuantity } from './binance/calculateOrderQuantity'
+import { getQuantity } from './db/getQuantity'
 // import { setTelegramCallbacks } from './notifications/setTelegramCallbacks'
 
 const PORT = process.env.PORT || 3000

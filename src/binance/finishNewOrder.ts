@@ -3,18 +3,15 @@ import { storeOrderToDb } from '../db/storeOrderToDb'
 import { sendMessageToTelegram } from '../notifications/sendMessageToTelegram'
 import ccxt from 'ccxt'
 
-export const sendOrderResponse = (
-  orderStatus: ccxt.Order,
-  orderType: string
-) => {
+export const finishNewOrder = (orderStatus: ccxt.Order, action: string) => {
   if (orderStatus && orderStatus.status && orderStatus.status === 'closed') {
-    if (orderType === 'buy') {
+    if (action === 'buy' || action === 'borrow') {
       storeOrderToDb(
         orderStatus.symbol,
         orderStatus.filled.toString(),
         orderStatus.price.toString()
       )
-    } else if (orderType === 'sell')
+    } else if (action === 'sell' || action === 'repay')
       resetTickerAndStoreToDb(
         orderStatus.symbol,
         orderStatus.filled.toString(),

@@ -1,18 +1,16 @@
 import { Router } from 'express'
-// import { createNewOrder } from '../binance/createNewOrder'
+import { createNewOrder, createNewShortOrder } from '../binance/createNewOrder'
 
 export const newOrderRoute = Router()
 
 interface RequestBody {
   tradingPair: string
   action: 'buy' | 'sell'
+  type: 'flat' | 'short' | 'long'
   coinOne: string
   coinTwo: string
   password: string
 }
-
-let tickerArrayBuy: string[] = []
-let tickerArraySell: string[] = []
 
 export class BotStatus {
   public static isRunning = true
@@ -33,10 +31,10 @@ newOrderRoute.post('/new-order', async (req, res) => {
     })
   }
 
-  const { tradingPair, coinOne, coinTwo, action, password } =
+  const { tradingPair, coinOne, coinTwo, action, password, type } =
     req.body as RequestBody
 
-  if (!tradingPair || !coinOne || !coinTwo || !action || !password) {
+  if (!tradingPair || !coinOne || !coinTwo || !action || !password || !type) {
     res.status(400).send('Missing required parameters')
     return
   }
@@ -47,32 +45,15 @@ newOrderRoute.post('/new-order', async (req, res) => {
   }
 
   const lAction = action.toLowerCase()
-
-  //! THIS IS A TEMPORARY FIX
-  // disable double buys & sells (some tradingview issues with few strategies)
-  // for now it's not possible to buy many times the same coin
-
-  if (tickerArrayBuy.includes(tradingPair) && lAction === 'buy') {
-    res.status(400).send('Already bought this coin')
-    return
-  }
-
-  if (tickerArraySell.includes(tradingPair) && lAction === 'sell') {
-    res.status(400).send('Already sold this coin')
-    return
-  }
-  if (lAction === 'buy') {
-    tickerArrayBuy.push(tradingPair)
-    tickerArraySell = tickerArraySell.filter((item) => item !== tradingPair)
-  } else if (lAction === 'sell') {
-    tickerArraySell.push(tradingPair)
-    tickerArrayBuy = tickerArrayBuy.filter((item) => item !== tradingPair)
-  }
-
+  let status = { status: 'Order Failed', code: 400 }
   console.log(`🤖 An order to ${lAction} ${coinOne} was sent to Binance Bot.`)
 
-  // const status = await createNewOrder(tradingPair, coinOne, coinTwo, orderType)
+  if (type === 'flat' || type === 'short') {
+    const action = lAction === 'sell' ? 'borrow' : 'repay'
+    status = await createNewShortOrder(action, tradingPair, coinTwo)
+  } else {
+    status = await createNewOrder(tradingPair, coinOne, coinTwo, action)
+  }
 
-  // res.status(status.code).json(status.status)
-  res.send(200)
+  res.status(status.code).json(status.status)
 })

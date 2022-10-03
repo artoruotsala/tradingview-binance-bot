@@ -1,7 +1,12 @@
-import ccxt from 'ccxt'
-import { createSpotOrder, fetchBalance } from './binance'
+import { getQuantity } from '../db/getQuantity'
+import {
+  createMarketOrder,
+  fetchBalance,
+  marginBorrow,
+  marginRepay,
+} from './binance'
 import { calculateOrderQuantity } from './calculateOrderQuantity'
-import { sendOrderResponse } from './sendOrderResponse'
+import { finishNewOrder } from './finishNewOrder'
 
 export const createNewOrder = async (
   tradingPair: string,
@@ -35,38 +40,83 @@ export const createNewOrder = async (
       }
     }
 
-    const orderStatus = await createSpotOrder(
+    const orderStatus = await createMarketOrder(
       tradingPair,
-      'market',
       action,
-      quantity
+      quantity,
+      undefined,
+      {
+        type: 'spot',
+      }
     )
 
     console.log('ℹ️  Response from Binance: ', orderStatus)
-    return sendOrderResponse(orderStatus, action)
+    return finishNewOrder(orderStatus, action)
   } catch (error) {
     console.log(`❗ Couldn't place ${action} order.`, error)
     return failedOrder
   }
 }
 
-// const createNewMarginOrder = async (orderType: 'BORROW' | 'REPAY' | 'BUY') => {
+// sell flat => borrow
+// buy flat => repay
 
-//   exchange.marginAccountBorrow({
-//     asset: 'USDT',
-//     amount: 100,
-//   })
+export const createNewShortOrder = async (
+  action: 'borrow' | 'repay',
+  tradingPair: string,
+  coinTwo: string
+) => {
+  const failedOrder = { status: 'Order Failed', code: 400 }
 
-//   exchange.marginAccountNewOrder({
-//     symbol: 'BTCUSDT',
-//     side: 'SELL',
-//     type: 'MARKET',
-//     quantity: 0.001,
+  try {
+    if (action === 'borrow') {
+      const quantity = await calculateOrderQuantity(tradingPair, coinTwo, true)
+      console.log('calculating amount')
+      if (!quantity) {
+        console.log("quantity couldn't be calculated")
+        return failedOrder
+      }
+      await marginBorrow(tradingPair, quantity, Date.now())
 
-//   })
+      console.log('Borrowed...')
 
-//   exchange.marginAccountRepay({
-//     asset: 'USDT',
-//     amount: 100,
-//   })
-// }
+      const orderStatus = await createMarketOrder(
+        tradingPair,
+        'sell',
+        quantity,
+        undefined,
+        {
+          type: 'margin',
+        }
+      )
+
+      console.log('ℹ️  Response from Binance: ', orderStatus)
+      return finishNewOrder(orderStatus, action)
+    } else if (action === 'repay') {
+      const quantity = await getQuantity(tradingPair)
+      if (!quantity) {
+        console.log('no quantity')
+        return failedOrder
+      }
+      const orderStatus = await createMarketOrder(
+        tradingPair,
+        'buy',
+        quantity,
+        undefined,
+        {
+          type: 'margin',
+        }
+      )
+      console.log('ℹ️  Response from Binance: ', orderStatus)
+      await marginRepay(tradingPair, quantity, Date.now())
+
+      console.log('Repayed!')
+      return finishNewOrder(orderStatus, action)
+    } else {
+      return failedOrder
+    }
+  } catch (error) {
+    console.log(`❗ Couldn't place ${action} order.`, error)
+    return failedOrder
+  }
+}
