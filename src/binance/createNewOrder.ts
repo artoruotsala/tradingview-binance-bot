@@ -1,11 +1,9 @@
 import { getQuantity } from '../db/getQuantity'
-import { roundStep } from '../helpers/roundStep'
 import {
   createMarketOrder,
   fetchBalance,
   marginBorrow,
   marginRepay,
-  TICKERS,
 } from './binance'
 import { calculateOrderQuantity } from './calculateOrderQuantity'
 import { finishNewOrder } from './finishNewOrder'

@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import { calculateOrderQuantity } from '../binance/calculateOrderQuantity'
 import { createNewOrder, createNewShortOrder } from '../binance/createNewOrder'
 
 export const newOrderRoute = Router()

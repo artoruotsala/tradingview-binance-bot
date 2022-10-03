@@ -1,4 +1,3 @@
-import { AvgPriceResult } from 'binance-api-node'
 import { TICKERS, binanceClient } from './binance'
 import { getTrades } from '../db/getTrades'
 import { roundStep } from '../helpers/roundStep'
