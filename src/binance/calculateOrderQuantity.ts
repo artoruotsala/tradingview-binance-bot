@@ -1,10 +1,11 @@
 import { AvgPriceResult } from 'binance-api-node'
 import { TICKERS, binanceClient } from './binance'
 import { getTrades } from '../db/getTrades'
+import { roundStep } from '../helpers/roundStep'
 
 export class TradeSize {
   private static TRADE_SIZE = parseFloat(process.env.TRADE_SIZE_MAINCOIN!) || 0
-  private static TRADE_SIZE_PERC = 1
+  private static TRADE_SIZE_PERC = 0.02
   public static get() {
     return TradeSize.TRADE_SIZE
   }
@@ -24,20 +25,20 @@ export class TradeSize {
   }
 }
 
-export const getOrderPerc = async (initTradePercSize: number = 0.2) => {
+export const getOrderPerc = async () => {
   let size = 0
+  const percSize = TradeSize.getPerc()
+
   try {
     const trades = await getTrades()
-    let remainingPerc = 1 - initTradePercSize * (trades?.length || 0)
 
-    if (remainingPerc <= 0) {
+    let remainingPerc = 1 - percSize * (trades?.length || 0)
+
+    if (remainingPerc < 0) {
       throw new Error('No more balance available for trading')
     }
 
-    size =
-      initTradePercSize / remainingPerc > 1
-        ? 1
-        : initTradePercSize / remainingPerc
+    size = percSize / remainingPerc > 1 ? 1 : percSize / remainingPerc
   } catch (error) {
     console.log(error)
   }
@@ -47,7 +48,8 @@ export const getOrderPerc = async (initTradePercSize: number = 0.2) => {
 export const calculateOrderQuantity = async (
   tradingPair: string,
   coinTwo: string,
-  expStrategy: boolean
+  expStrategy: boolean,
+  wallet: 'spot' | 'margin'
 ) => {
   const minNotional = TICKERS[tradingPair]?.minNotional
   const minQty = TICKERS[tradingPair]?.minQty
@@ -66,7 +68,7 @@ export const calculateOrderQuantity = async (
       throw new Error('No price found')
     }
 
-    const userWallet = await binanceClient.fetchBalance()
+    const userWallet = await binanceClient.fetchBalance({ type: wallet })
     const coinTwoBalance = userWallet[coinTwo].free
 
     if (!coinTwoBalance) {
@@ -84,14 +86,6 @@ export const calculateOrderQuantity = async (
 
     if (price * quantity < minNotional) {
       quantity = minNotional / price
-    }
-
-    const roundStep = (qty: string, precision: number): number => {
-      // Integers do not require rounding
-      if (Number.isInteger(qty)) return parseFloat(qty)
-      const qtyString = parseFloat(qty).toFixed(16)
-      const decimalIndex = qtyString.indexOf('.')
-      return parseFloat(qtyString.slice(0, decimalIndex + precision + 1))
     }
 
     quantity = roundStep(quantity.toString(), precision)

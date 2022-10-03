@@ -27,7 +27,7 @@ export const initExchangeData = async () => {
           if (key.active) {
             TICKERS[key.id] = {
               symbol: key.id,
-              precision: key.precision.price,
+              precision: key.precision.base,
               minQty: key.limits.amount.min,
               minNotional: key.limits.cost.min,
             }
@@ -44,38 +44,16 @@ export const initExchangeData = async () => {
   })
 }
 
-export async function fetchBalance(): Promise<ccxt.Balances> {
+export async function fetchBalance(
+  wallet: 'spot' | 'margin'
+): Promise<ccxt.Balances> {
   try {
     if (!binanceClient) return Promise.reject('binance client not initialized')
-    return await binanceClient.fetchBalance()
+    return await binanceClient.fetchBalance({ type: wallet })
   } catch (error) {
     return Promise.reject(error)
   }
 }
-
-// export async function createSpotOrder(
-//   symbol: string,
-//   type: 'market' | 'limit',
-//   side: 'buy' | 'sell',
-//   amount: number,
-//   price?: number,
-//   params?: ccxt.Params
-// ): Promise<ccxt.Order> {
-//   try {
-//     if (!binanceClient) return Promise.reject('binance client not initialized')
-//     return await binanceClient.createOrder(
-//       symbol,
-//       type,
-//       side,
-//       amount,
-//       price,
-//       params
-//     )
-//     binanceClient.ord
-//   } catch (error) {
-//     return Promise.reject(error)
-//   }
-// }
 
 export async function createMarketOrder(
   symbol: string,

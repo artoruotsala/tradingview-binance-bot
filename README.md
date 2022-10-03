@@ -35,7 +35,6 @@ MYSQL_ROOT_PASSWORD=
 
 ```
 {
-	"tradingPair" : "TRXUSDT",
 	"coinOne" : "TRX",
 	"coinTwo" : "USDT",
 	"type" : "{{strategy.market_position}}",

@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { calculateOrderQuantity } from '../binance/calculateOrderQuantity'
 import { createNewOrder, createNewShortOrder } from '../binance/createNewOrder'
 
 export const newOrderRoute = Router()
@@ -31,13 +32,14 @@ newOrderRoute.post('/new-order', async (req, res) => {
     })
   }
 
-  const { tradingPair, coinOne, coinTwo, action, password, type } =
-    req.body as RequestBody
+  const { coinOne, coinTwo, action, password, type } = req.body as RequestBody
 
-  if (!tradingPair || !coinOne || !coinTwo || !action || !password || !type) {
+  if (!coinOne || !coinTwo || !action || !password || !type) {
     res.status(400).send('Missing required parameters')
     return
   }
+
+  const tradingPair = `${coinOne}${coinTwo}`
 
   if (password !== process.env.TRADINGVIEW_PASSWORD!) {
     res.status(401).send('Unauthorized')
@@ -50,9 +52,9 @@ newOrderRoute.post('/new-order', async (req, res) => {
 
   if (type === 'flat' || type === 'short') {
     const action = lAction === 'sell' ? 'borrow' : 'repay'
-    status = await createNewShortOrder(action, tradingPair, coinTwo)
+    status = await createNewShortOrder(action, tradingPair, coinOne, coinTwo)
   } else {
-    status = await createNewOrder(tradingPair, coinOne, coinTwo, action)
+    status = await createNewOrder(tradingPair, coinOne, coinTwo, action, 'spot')
   }
 
   res.status(status.code).json(status.status)

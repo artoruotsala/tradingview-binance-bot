@@ -1,9 +1,11 @@
 import { getQuantity } from '../db/getQuantity'
+import { roundStep } from '../helpers/roundStep'
 import {
   createMarketOrder,
   fetchBalance,
   marginBorrow,
   marginRepay,
+  TICKERS,
 } from './binance'
 import { calculateOrderQuantity } from './calculateOrderQuantity'
 import { finishNewOrder } from './finishNewOrder'
@@ -12,7 +14,8 @@ export const createNewOrder = async (
   tradingPair: string,
   coinOne: string,
   coinTwo: string,
-  action: 'buy' | 'sell'
+  action: 'buy' | 'sell',
+  wallet: 'spot' | 'margin'
 ) => {
   let quantity = 0
 
@@ -22,7 +25,12 @@ export const createNewOrder = async (
     // BUY ORDER
 
     if (action === 'buy') {
-      quantity = await calculateOrderQuantity(tradingPair, coinTwo, true)
+      quantity = await calculateOrderQuantity(
+        tradingPair,
+        coinTwo,
+        true,
+        wallet
+      )
       console.log('calculating amount')
       if (!quantity) {
         console.log("quantity couldn't be calculated")
@@ -32,8 +40,9 @@ export const createNewOrder = async (
     // SELL ORDER
     // at this point, sell all
     else if (action === 'sell') {
-      const userWallet = await fetchBalance()
-      const quantity = userWallet[coinOne].free
+      const userWallet = await fetchBalance(wallet)
+      quantity = userWallet[coinOne].free
+
       if (!quantity) {
         console.log('no quantity')
         return failedOrder
@@ -64,19 +73,25 @@ export const createNewOrder = async (
 export const createNewShortOrder = async (
   action: 'borrow' | 'repay',
   tradingPair: string,
+  coinOne: string,
   coinTwo: string
 ) => {
   const failedOrder = { status: 'Order Failed', code: 400 }
 
   try {
     if (action === 'borrow') {
-      const quantity = await calculateOrderQuantity(tradingPair, coinTwo, true)
+      const quantity = await calculateOrderQuantity(
+        tradingPair,
+        coinTwo,
+        true,
+        'margin'
+      )
       console.log('calculating amount')
       if (!quantity) {
         console.log("quantity couldn't be calculated")
         return failedOrder
       }
-      await marginBorrow(tradingPair, quantity, Date.now())
+      await marginBorrow(coinOne, quantity, Date.now())
 
       console.log('Borrowed...')
 
@@ -108,7 +123,7 @@ export const createNewShortOrder = async (
         }
       )
       console.log('ℹ️  Response from Binance: ', orderStatus)
-      await marginRepay(tradingPair, quantity, Date.now())
+      await marginRepay(coinTwo, quantity, Date.now())
 
       console.log('Repayed!')
       return finishNewOrder(orderStatus, action)
