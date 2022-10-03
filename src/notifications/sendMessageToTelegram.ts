@@ -1,10 +1,10 @@
-import { OrderResponseFull } from 'binance'
+import ccxt from 'ccxt'
 import { chatId, telegramBot } from '..'
 
-export async function sendMessageToTelegram(orderStatus: OrderResponseFull) {
-  const buySell = orderStatus.side === 'BUY' ? '🟢' : '🔴'
+export async function sendMessageToTelegram(orderStatus: ccxt.Order) {
+  const buySell = orderStatus.side === 'buy' ? '🟢' : '🔴'
   await telegramBot.sendMessage(
     chatId,
-    `Order Placed: ${buySell} ${orderStatus.symbol} ${orderStatus.executedQty} at ${orderStatus.fills[0].price}`
+    `Order Placed: ${buySell} ${orderStatus.symbol} ${orderStatus.filled} at ${orderStatus.price}`
   )
 }

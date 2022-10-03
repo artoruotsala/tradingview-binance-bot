@@ -1,6 +1,5 @@
 import { AvgPriceResult } from 'binance-api-node'
-import { TICKERS } from './binance'
-import { binanceClient } from '..'
+import { TICKERS, binanceClient } from './binance'
 import { getTrades } from '../db/getTrades'
 
 export class TradeSize {

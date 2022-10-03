@@ -1,59 +1,54 @@
-// import { OrderResponseFull, OrderSide } from 'binance'
-// import { exchange } from '..'
-// import { calculateOrderQuantity } from './calculateOrderQuantity'
-// import { sendOrderResponse } from './sendOrderResponse'
+import ccxt from 'ccxt'
+import { createSpotOrder, fetchBalance } from './binance'
+import { calculateOrderQuantity } from './calculateOrderQuantity'
+import { sendOrderResponse } from './sendOrderResponse'
 
-// export const createNewOrder = async (
-//   tradingPair: string,
-//   coinOne: string,
-//   coinTwo: string,
-//   orderType: string
-// ) => {
-//   let orderStatus: OrderResponseFull
-//   let quantity = 0
+export const createNewOrder = async (
+  tradingPair: string,
+  coinOne: string,
+  coinTwo: string,
+  action: 'buy' | 'sell'
+) => {
+  let quantity = 0
 
-//   const failedOrder = { status: 'Order Failed', code: 400 }
+  const failedOrder = { status: 'Order Failed', code: 400 }
 
-//   try {
-//     // BUY ORDER
+  try {
+    // BUY ORDER
 
-//     if (orderType.toUpperCase() === 'BUY') {
-//       quantity = await calculateOrderQuantity(tradingPair, coinTwo, true)
-//       console.log('calculating amount')
-//       if (!quantity) {
-//         console.log("quantity couldn't be calculated")
-//         return failedOrder
-//       }
-//     }
-//     // SELL ORDER
-//     // at this point, sell all
-//     else if (orderType.toUpperCase() === 'SELL') {
-//       const userWallet = await exchange.getAccountInformation()
-//       const userWalletData = userWallet.balances
-//       const userWalletDataFiltered = userWalletData.filter(
-//         (coin) => coin.asset === coinOne
-//       )
-//       quantity = parseFloat(userWalletDataFiltered[0].free as string)
-//       if (!quantity) {
-//         console.log('no quantity')
-//         return failedOrder
-//       }
-//     }
+    if (action === 'buy') {
+      quantity = await calculateOrderQuantity(tradingPair, coinTwo, true)
+      console.log('calculating amount')
+      if (!quantity) {
+        console.log("quantity couldn't be calculated")
+        return failedOrder
+      }
+    }
+    // SELL ORDER
+    // at this point, sell all
+    else if (action === 'sell') {
+      const userWallet = await fetchBalance()
+      const quantity = userWallet[coinOne].free
+      if (!quantity) {
+        console.log('no quantity')
+        return failedOrder
+      }
+    }
 
-//     orderStatus = (await exchange.submitNewOrder({
-//       symbol: tradingPair,
-//       side: orderType.toUpperCase() as OrderSide,
-//       type: 'MARKET',
-//       quantity: quantity,
-//     })) as OrderResponseFull
+    const orderStatus = await createSpotOrder(
+      tradingPair,
+      'market',
+      action,
+      quantity
+    )
 
-//     console.log('ℹ️  Response from Binance: ', orderStatus)
-//     return sendOrderResponse(orderStatus, orderType)
-//   } catch (error) {
-//     console.log(`❗ Couldn't place ${orderType} order.`, error)
-//     return failedOrder
-//   }
-// }
+    console.log('ℹ️  Response from Binance: ', orderStatus)
+    return sendOrderResponse(orderStatus, action)
+  } catch (error) {
+    console.log(`❗ Couldn't place ${action} order.`, error)
+    return failedOrder
+  }
+}
 
 // const createNewMarginOrder = async (orderType: 'BORROW' | 'REPAY' | 'BUY') => {
 
@@ -70,8 +65,8 @@
 
 //   })
 
-//   // exchange.marginAccountRepay({
-//   //   asset: 'USDT',
-//   //   amount: 100,
-//   // })
+//   exchange.marginAccountRepay({
+//     asset: 'USDT',
+//     amount: 100,
+//   })
 // }

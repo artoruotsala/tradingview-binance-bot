@@ -8,13 +8,6 @@ import { initExchangeData } from './binance/binance'
 import TelegramBot from 'node-telegram-bot-api'
 import { calculateOrderQuantity } from './binance/calculateOrderQuantity'
 // import { setTelegramCallbacks } from './notifications/setTelegramCallbacks'
-import ccxt from 'ccxt'
-
-export const binanceClient = new ccxt.binance({
-  apiKey: process.env.BINANCE_API_KEY!,
-  secret: process.env.BINANCE_API_SECRET!,
-  enableRateLimit: true,
-})
 
 const PORT = process.env.PORT || 3000
 
@@ -26,9 +19,10 @@ export const pool = mariadb.createPool({
 })
 
 export const chatId = process.env.TELEGRAM_CHAT_ID_LIVE!
-// export const telegramBot = new TelegramBot(process.env.TELEGRAM_TOKEN_LIVE!, {
-//   polling: true,
-// })
+export const telegramBot = new TelegramBot(
+  process.env.TELEGRAM_TOKEN_LIVE!
+  // {polling: true,}
+)
 
 const app = express()
 app.use(
@@ -49,7 +43,7 @@ app.use(newOrderRoute, rootRoute)
 // setTelegramCallbacks(telegramBot)
 
 app.listen(3000, async () => {
-  await initExchangeData(binanceClient)
+  // await initExchangeData()
   // telegramBot.sendMessage(chatId, `Binance bot started! 🚀`)
   console.log(`Server running on port ${PORT}`)
 })

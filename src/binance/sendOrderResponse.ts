@@ -1,24 +1,28 @@
-// import { OrderResponseFull } from 'binance'
-// import { resetTickerAndStoreToDb } from '../db/resetTickerAndStoreToDb'
-// import { storeOrderToDb } from '../db/storeOrderToDb'
-// import { sendMessageToTelegram } from '../notifications/sendMessageToTelegram'
+import { resetTickerAndStoreToDb } from '../db/resetTickerAndStoreToDb'
+import { storeOrderToDb } from '../db/storeOrderToDb'
+import { sendMessageToTelegram } from '../notifications/sendMessageToTelegram'
+import ccxt from 'ccxt'
 
-// export const sendOrderResponse = (
-//   orderStatus: OrderResponseFull,
-//   orderType: string
-// ) => {
-//   if (orderStatus && orderStatus.status && orderStatus.status === 'FILLED') {
-//     if (orderType.toUpperCase() === 'BUY') {
-//       storeOrderToDb(orderStatus.symbol, orderStatus.executedQty as string)
-//     } else
-//       resetTickerAndStoreToDb(
-//         orderStatus.symbol,
-//         orderStatus.executedQty as string,
-//         orderStatus.fills[0].price as string
-//       )
+export const sendOrderResponse = (
+  orderStatus: ccxt.Order,
+  orderType: string
+) => {
+  if (orderStatus && orderStatus.status && orderStatus.status === 'closed') {
+    if (orderType === 'buy') {
+      storeOrderToDb(
+        orderStatus.symbol,
+        orderStatus.filled.toString(),
+        orderStatus.price.toString()
+      )
+    } else if (orderType === 'sell')
+      resetTickerAndStoreToDb(
+        orderStatus.symbol,
+        orderStatus.filled.toString(),
+        orderStatus.price.toString()
+      )
 
-//     sendMessageToTelegram(orderStatus)
-//     return { status: 'Order Placed', code: 200 }
-//   }
-//   return { status: 'Order Failed', code: 400 }
-// }
+    sendMessageToTelegram(orderStatus)
+    return { status: 'Order Placed', code: 200 }
+  }
+  return { status: 'Order Failed', code: 400 }
+}
