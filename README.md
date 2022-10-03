@@ -38,7 +38,8 @@ MYSQL_ROOT_PASSWORD=
 	"tradingPair" : "TRXUSDT",
 	"coinOne" : "TRX",
 	"coinTwo" : "USDT",
-	"orderType" : "SELL",
+	"type" : "{{strategy.market_position}}",
+	"action" : "{{strategy.order.action}}",
 	"password" : same as TRADINGVIEW_PASSWORD env
 }
 ```

@@ -1,11 +1,13 @@
 import ccxt from 'ccxt'
 import { chatId, telegramBot } from '..'
 
-export async function sendMessageToTelegram(orderStatus: ccxt.Order) {
+export async function sendMessageToTelegram(
+  orderStatus: ccxt.Order,
+  action: string
+) {
   const buySell = orderStatus.side === 'buy' ? '🟢' : '🔴'
-  const short = orderStatus.type
   await telegramBot.sendMessage(
     chatId,
-    `Order Placed: ${buySell} ${orderStatus.symbol} ${orderStatus.filled} at ${orderStatus.price}`
+    `Order Placed: ${buySell} ${action} ${orderStatus.symbol} ${orderStatus.filled} at ${orderStatus.price}`
   )
 }

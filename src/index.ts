@@ -3,12 +3,9 @@ import mariadb from 'mariadb'
 import dotenv from 'dotenv'
 dotenv.config()
 import { newOrderRoute, rootRoute } from './routes'
-import { MainClient } from 'binance'
 import { initExchangeData } from './binance/binance'
 import TelegramBot from 'node-telegram-bot-api'
-import { calculateOrderQuantity } from './binance/calculateOrderQuantity'
-import { getQuantity } from './db/getQuantity'
-// import { setTelegramCallbacks } from './notifications/setTelegramCallbacks'
+import { setTelegramCallbacks } from './notifications/setTelegramCallbacks'
 
 const PORT = process.env.PORT || 3000
 
@@ -20,10 +17,9 @@ export const pool = mariadb.createPool({
 })
 
 export const chatId = process.env.TELEGRAM_CHAT_ID_LIVE!
-export const telegramBot = new TelegramBot(
-  process.env.TELEGRAM_TOKEN_LIVE!
-  // {polling: true,}
-)
+export const telegramBot = new TelegramBot(process.env.TELEGRAM_TOKEN_LIVE!, {
+  polling: true,
+})
 
 const app = express()
 app.use(
@@ -41,10 +37,10 @@ app.use(function (error: any, req: any, res: any, next: NextFunction) {
 
 app.use(newOrderRoute, rootRoute)
 
-// setTelegramCallbacks(telegramBot)
+setTelegramCallbacks(telegramBot)
 
 app.listen(3000, async () => {
-  // await initExchangeData()
-  // telegramBot.sendMessage(chatId, `Binance bot started! 🚀`)
+  await initExchangeData()
+  telegramBot.sendMessage(chatId, `Binance bot started! 🚀`)
   console.log(`Server running on port ${PORT}`)
 })

@@ -18,7 +18,7 @@ export const finishNewOrder = (orderStatus: ccxt.Order, action: string) => {
         orderStatus.price.toString()
       )
 
-    sendMessageToTelegram(orderStatus)
+    sendMessageToTelegram(orderStatus, action)
     return { status: 'Order Placed', code: 200 }
   }
   return { status: 'Order Failed', code: 400 }
