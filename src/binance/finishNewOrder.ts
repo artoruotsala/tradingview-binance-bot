@@ -3,20 +3,27 @@ import { storeOrderToDb } from '../db/storeOrderToDb'
 import { sendMessageToTelegram } from '../notifications/sendMessageToTelegram'
 import ccxt from 'ccxt'
 
-export const finishNewOrder = (orderStatus: ccxt.Order, action: string) => {
+export const finishNewOrder = (
+  orderStatus: ccxt.Order,
+  action: string,
+  table: 'spot' | 'marginlong' | 'marginshort'
+) => {
   if (orderStatus && orderStatus.status && orderStatus.status === 'closed') {
-    if (action === 'buy' || action === 'borrow') {
+    if (action === 'buy') {
       storeOrderToDb(
-        orderStatus.symbol,
+        table,
+        orderStatus.info.symbol,
         orderStatus.filled.toString(),
         orderStatus.price.toString()
       )
-    } else if (action === 'sell' || action === 'repay')
+    } else if (action === 'sell' || action === 'repay') {
       resetTickerAndStoreToDb(
-        orderStatus.symbol,
+        table,
+        orderStatus.info.symbol,
         orderStatus.filled.toString(),
         orderStatus.price.toString()
       )
+    }
 
     sendMessageToTelegram(orderStatus, action)
     return { status: 'Order Placed', code: 200 }

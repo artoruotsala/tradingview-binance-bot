@@ -53,12 +53,16 @@ export const createNewOrder = async (
       quantity,
       undefined,
       {
-        type: 'spot',
+        type: wallet,
       }
     )
 
     console.log('ℹ️  Response from Binance: ', orderStatus)
-    return finishNewOrder(orderStatus, action)
+    return finishNewOrder(
+      orderStatus,
+      action,
+      wallet === 'spot' ? 'spot' : 'marginlong'
+    )
   } catch (error) {
     console.log(`❗ Couldn't place ${action} order.`, error)
     return failedOrder
@@ -104,9 +108,10 @@ export const createNewShortOrder = async (
       )
 
       console.log('ℹ️  Response from Binance: ', orderStatus)
-      return finishNewOrder(orderStatus, action)
+      return finishNewOrder(orderStatus, action, 'marginshort')
     } else if (action === 'repay') {
-      const quantity = await getQuantity(tradingPair)
+      const quantity = await getQuantity('marginshort', tradingPair)
+      console.log(quantity)
       if (!quantity) {
         console.log('no quantity')
         return failedOrder
@@ -121,10 +126,12 @@ export const createNewShortOrder = async (
         }
       )
       console.log('ℹ️  Response from Binance: ', orderStatus)
-      await marginRepay(coinTwo, quantity, Date.now())
 
+      await sleep(5000)
+
+      await marginRepay(coinOne, quantity, Date.now())
       console.log('Repayed!')
-      return finishNewOrder(orderStatus, action)
+      return finishNewOrder(orderStatus, action, 'marginshort')
     } else {
       return failedOrder
     }
@@ -132,4 +139,10 @@ export const createNewShortOrder = async (
     console.log(`❗ Couldn't place ${action} order.`, error)
     return failedOrder
   }
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
 }

@@ -2,6 +2,7 @@ import { pool } from '..'
 import { SQLResponse } from './storeOrderToDb'
 
 export const resetTickerAndStoreToDb = async (
+  table: string,
   tradingPair: string,
   quantity: string,
   sellPrice: string
@@ -9,7 +10,7 @@ export const resetTickerAndStoreToDb = async (
   try {
     const connection = await pool.getConnection()
     const sqlResponse = (await connection.execute(
-      'SELECT buyPrice FROM tickers WHERE ticker = ?',
+      `SELECT buyPrice FROM ${table} WHERE ticker = ?`,
       [tradingPair]
     )) as SQLResponse[]
 
@@ -17,7 +18,7 @@ export const resetTickerAndStoreToDb = async (
     const timestamp = Date.now().valueOf() / 1000 / 60
 
     await connection.execute(
-      'REPLACE INTO tickers (ticker, quantity, buyPrice, sellPrice, pyramids, timestamp, highest) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      `REPLACE INTO ${table} (ticker, quantity, buyPrice, sellPrice, pyramids, timestamp, highest) VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [tradingPair, '0', '0', '0', 0, 0, '0']
     )
 

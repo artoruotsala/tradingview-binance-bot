@@ -7,7 +7,7 @@
 #
 # Host: localhost (MySQL 5.5.5-10.9.3-MariaDB-1:10.9.3+maria~ubu2204)
 # Database: tradingview-binance-db
-# Generation Time: 2022-09-30 06:50:12 +0000
+# Generation Time: 2022-10-03 23:20:20 +0000
 # ************************************************************
 
 
@@ -37,12 +37,12 @@ CREATE TABLE `alltrades` (
 
 
 
-# Dump of table tickers
+# Dump of table marginlong
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `tickers`;
+DROP TABLE IF EXISTS `marginlong`;
 
-CREATE TABLE `tickers` (
+CREATE TABLE `marginlong` (
   `ticker` char(11) NOT NULL,
   `quantity` text DEFAULT NULL,
   `buyPrice` text DEFAULT NULL,
@@ -53,15 +53,42 @@ CREATE TABLE `tickers` (
   PRIMARY KEY (`ticker`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-LOCK TABLES `tickers` WRITE;
-/*!40000 ALTER TABLE `tickers` DISABLE KEYS */;
 
-INSERT INTO `tickers` (`ticker`, `quantity`, `buyPrice`, `sellPrice`, `pyramids`, `timestamp`, `highest`)
-VALUES
-	('BTCUSDT','0','0','0',0,0,'0');
 
-/*!40000 ALTER TABLE `tickers` ENABLE KEYS */;
-UNLOCK TABLES;
+# Dump of table marginshort
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `marginshort`;
+
+CREATE TABLE `marginshort` (
+  `ticker` char(11) NOT NULL,
+  `quantity` text DEFAULT NULL,
+  `buyPrice` text DEFAULT NULL,
+  `sellPrice` text DEFAULT NULL,
+  `pyramids` int(11) DEFAULT NULL,
+  `timestamp` int(11) DEFAULT NULL,
+  `highest` text DEFAULT NULL,
+  PRIMARY KEY (`ticker`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+# Dump of table spot
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `spot`;
+
+CREATE TABLE `spot` (
+  `ticker` char(11) NOT NULL,
+  `quantity` text DEFAULT NULL,
+  `buyPrice` text DEFAULT NULL,
+  `sellPrice` text DEFAULT NULL,
+  `pyramids` int(11) DEFAULT NULL,
+  `timestamp` int(11) DEFAULT NULL,
+  `highest` text DEFAULT NULL,
+  PRIMARY KEY (`ticker`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 

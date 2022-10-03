@@ -35,4 +35,3 @@ services:
     command: npm run dev
 volumes:
   maria-data:
-    driver: local

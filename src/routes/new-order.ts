@@ -6,7 +6,7 @@ export const newOrderRoute = Router()
 interface RequestBody {
   tradingPair: string
   action: 'buy' | 'sell'
-  type: 'flat' | 'short' | 'long'
+  type: 'flat' | 'short' | 'long' | 'spot'
   coinOne: string
   coinTwo: string
   password: string
@@ -49,10 +49,38 @@ newOrderRoute.post('/new-order', async (req, res) => {
   let status = { status: 'Order Failed', code: 400 }
   console.log(`🤖 An order to ${lAction} ${coinOne} was sent to Binance Bot.`)
 
-  if (type === 'flat' || type === 'short') {
-    const action = lAction === 'sell' ? 'borrow' : 'repay'
-    status = await createNewShortOrder(action, tradingPair, coinOne, coinTwo)
-  } else {
+  // spot order
+  // spot buy / sell
+
+  // margin order
+  // long buy
+  // flat sell
+
+  // short order
+  // short sell = borrow
+  // flat buy = repay
+
+  if (type === 'long' && lAction === 'buy') {
+    status = await createNewOrder(
+      tradingPair,
+      coinOne,
+      coinTwo,
+      'buy',
+      'margin'
+    )
+  } else if (type === 'flat' && lAction === 'sell') {
+    status = await createNewOrder(
+      tradingPair,
+      coinOne,
+      coinTwo,
+      'sell',
+      'margin'
+    )
+  } else if (type === 'short' && lAction === 'sell') {
+    status = await createNewShortOrder('borrow', tradingPair, coinOne, coinTwo)
+  } else if (type === 'flat' && lAction === 'buy') {
+    status = await createNewShortOrder('repay', tradingPair, coinOne, coinTwo)
+  } else if (type === 'spot') {
     status = await createNewOrder(tradingPair, coinOne, coinTwo, action, 'spot')
   }
 

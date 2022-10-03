@@ -11,6 +11,7 @@ export type SQLResponse = {
 }
 
 export const storeOrderToDb = async (
+  table: string,
   tradingPair: string,
   qty: string,
   buyPrice: string
@@ -20,7 +21,7 @@ export const storeOrderToDb = async (
 
     const connection = await pool.getConnection()
     const sqlResponse = await connection.execute(
-      'SELECT * FROM tickers WHERE ticker = ?',
+      `SELECT * FROM ${table} WHERE ticker = ?`,
       [tradingPair]
     )
 
@@ -44,7 +45,7 @@ export const storeOrderToDb = async (
     pyramids++
 
     await connection.execute(
-      'REPLACE INTO tickers (ticker, quantity, buyPrice, sellPrice, pyramids, timestamp, highest) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      `REPLACE INTO ${table} (ticker, quantity, buyPrice, sellPrice, pyramids, timestamp, highest) VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         tradingPair,
         newQuantity,
