@@ -4,7 +4,7 @@ import { roundStep } from '../helpers/roundStep'
 
 export class TradeSize {
   private static TRADE_SIZE = parseFloat(process.env.TRADE_SIZE_MAINCOIN!) || 0
-  private static TRADE_SIZE_PERC = 0.02
+  private static TRADE_SIZE_PERC = 0.4
   public static get() {
     return TradeSize.TRADE_SIZE
   }
@@ -24,12 +24,12 @@ export class TradeSize {
   }
 }
 
-export const getOrderPerc = async () => {
+export const getOrderPerc = async (wallet: 'spot' | 'margin') => {
   let size = 0
   const percSize = TradeSize.getPerc()
 
   try {
-    const trades = await getTrades()
+    const trades = await getTrades(wallet)
 
     let remainingPerc = 1 - percSize * (trades?.length || 0)
 
@@ -75,7 +75,7 @@ export const calculateOrderQuantity = async (
     }
 
     if (expStrategy) {
-      const orderPerc = await getOrderPerc()
+      const orderPerc = await getOrderPerc(wallet)
       quantity = (coinTwoBalance * orderPerc * 0.99) / price
     } else {
       quantity = (tradeSizeInMainCoin * 0.99) / price
