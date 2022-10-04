@@ -16,7 +16,7 @@ export const getTrades = async (table: 'spot' | 'margin') => {
     try {
       const connection = await pool.getConnection()
       const sqlResponse = await connection.execute(
-        `SELECT * FROM marginlong UNION SELECT * FROM marginshort WHERE quantity > 0`
+        `SELECT * FROM marginlong WHERE quantity > 0 UNION SELECT * FROM marginshort WHERE quantity > 0`
       )
       connection.release()
       return sqlResponse

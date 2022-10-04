@@ -96,6 +96,7 @@ export const createNewShortOrder = async (
       await marginBorrow(coinOne, quantity, Date.now())
 
       console.log('Borrowed...')
+      await sleep(5000)
 
       const orderStatus = await createMarketOrder(
         tradingPair,
