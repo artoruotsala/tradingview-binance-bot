@@ -75,8 +75,13 @@ export const calculateOrderQuantity = async (
     }
 
     if (expStrategy) {
-      const orderPerc = await getOrderPerc(wallet)
-      quantity = (coinTwoBalance * orderPerc * 0.99) / price
+      //! spot strategy hard coded for now (100% of balance)
+      if (wallet === 'spot') {
+        quantity = (coinTwoBalance * 1 * 0.99) / price
+      } else {
+        const orderPerc = await getOrderPerc(wallet)
+        quantity = (coinTwoBalance * orderPerc * 0.99) / price
+      }
     } else {
       quantity = (tradeSizeInMainCoin * 0.99) / price
     }
