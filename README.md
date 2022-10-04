@@ -1,15 +1,18 @@
-# Tradingview Binance Bot v.0.1
+# Tradingview Binance Bot v.0.2
 
 ## Getting started
 
 This bot places orders from Tradingview signals (webhook) to Binance. The bot can easily be deployed to AWS Lightsail.
 🚧 Under a development! 🚧
 
+V.0.2 MariaDB container removed. Lightsail can't preserve container volumes and db data is wiped on every restart.
+HOW TO FIX: Add RDS (MariaDB) on AWS and connect that.
+
 - Typescript
 - Docker
 - Node.js
 - Express
-- MariaDB
+- (MariaDB) - removed for now
 - Binance SDK
 - Telegram SDK
 

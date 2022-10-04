@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  ts-node-docker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      DB_NAME: tradingview-binance-db
+      DB_USER: root
+      DB_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      DB_HOST: tradingview-bot-db.colytwwnpen1.eu-central-1.rds.amazonaws.com
+    volumes:
+      - ./src:/home/node/app/src
+      - ./nodemon.json:/home/node/app/nodemon.json
+    expose:
+      - '3000'
+    ports:
+      - '80:3000'
+    restart: on-failure
+    command: node build/index.js

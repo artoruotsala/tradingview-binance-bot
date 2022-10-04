@@ -1,0 +1,7 @@
+version: '3.7'
+
+services:
+  mariadb:
+    volumes:
+      - maria-data:/data/db
+      - ./db_init:/docker-entrypoint-initdb.d
